@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by yangyang on 2017/1/14.
@@ -65,7 +67,6 @@ public class SignInAcitivity extends Activity implements TextWatcher{
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //initData();
                 et_sign_in_email.addTextChangedListener(SignInAcitivity.this);
                 /**
                  * 需要检查email和password是否为空，但是缺少确定密码项
@@ -74,7 +75,16 @@ public class SignInAcitivity extends Activity implements TextWatcher{
                     Toast.makeText(SignInAcitivity.this,"请填写您的邮箱或密码",Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    CheckAndAddUserMessage();
+                    /**
+                     * 检查邮箱是否合法
+                     * */
+                    if(CheckEmail(et_sign_in_email.getText().toString())){
+                        CheckAndAddUserMessage();
+                    }
+                    else{
+                        Toast.makeText(SignInAcitivity.this,"您的邮箱格式有误",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -134,7 +144,6 @@ public class SignInAcitivity extends Activity implements TextWatcher{
             @Override
             public void onError(int i, String s) {
                 Log.v("查找失败",s);
-
                 User user = new User(et_sign_in_email.getText().toString(),et_sign_in_password.getText().toString(),et_sign_in_nick_name.getText().toString(),userSex);
                 user.save(SignInAcitivity.this,new SaveListener(){
                     @Override
@@ -160,40 +169,18 @@ public class SignInAcitivity extends Activity implements TextWatcher{
                 finish();//关闭Activity
             }
         });
-        //bmobQuery.
-//        bmobQuery.findObjects(this, new FindListener<User>() {
-//            @Override
-//            public void onSuccess(List<User> list) {
-//                Toast.makeText(SignInAcitivity.this, "您的邮箱已被注册！！！", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onError(int i, String s) {
-//                User user = new User(et_sign_in_email.getText().toString(),et_sign_in_password.getText().toString(),et_sign_in_nick_name.getText().toString(),userSex);
-//                user.save(SignInAcitivity.this,new SaveListener(){
-//                    @Override
-//                    public void onSuccess() {
-//                        Log.v("1","添加成功");
-//                    }
-//
-//                    @Override
-//                    public void onFailure(int i, String s) {
-//                        Log.v("2","添加失败");
-//                    }
-//                });
-//                userMessage.put("userEmail",et_sign_in_email.getText().toString());
-//                userMessage.put("password",et_sign_in_password.getText().toString());
-//                /**
-//                 * 返回数据至MainActivity，自动填写刚才注册的信息
-//                 * */
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("user",userMessage);
-//                Intent data = new Intent();
-//                data.putExtras(bundle);//"key=>value"对
-//                setResult(2,data);
-//                finish();//关闭Activity
-//            }
-//        });
+    }
+    public static boolean CheckEmail(String email){
+        boolean flag = false;
+        try{
+            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+            Pattern regex = Pattern.compile(check);
+            Matcher matcher = regex.matcher(email);
+            flag = matcher.matches();
+        }catch(Exception e){
+            flag = false;
+        }
+        return flag;
     }
 }
 
