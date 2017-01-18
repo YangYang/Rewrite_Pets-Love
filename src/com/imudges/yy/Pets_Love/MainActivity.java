@@ -62,8 +62,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 2 && resultCode == 2){
             Bundle bundle = data.getExtras();
-            userMessage = (HashMap<String, String>) bundle.get("user");
-            et_email.setText(userMessage.get("userEmail"));
+            if(bundle!=null){
+                userMessage = (HashMap<String, String>) bundle.get("user");
+                et_email.setText(userMessage.get("userEmail"));
+            }
+            else{
+                et_email.setText("");
+            }
         }
     }
 }
